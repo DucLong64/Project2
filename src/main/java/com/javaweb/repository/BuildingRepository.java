@@ -1,12 +1,14 @@
 package com.javaweb.repository;
 
 import java.util.List;
-import java.util.Map;
 
-import com.javaweb.builder.BuildingSearchBuilder;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.javaweb.repository.custom.buildingRepositoryCustom;
 import com.javaweb.repository.entity.BuildingEntity;
 
-public interface BuildingRepository {
-	List<BuildingEntity> findAll(BuildingSearchBuilder buildingSearchBuilder);
-	void DeleteById(Long id);
+public interface BuildingRepository extends JpaRepository<BuildingEntity, Long>, buildingRepositoryCustom {
+	void deleteByIdIn(Long[] Ids);
+	List<BuildingEntity> findByNameContainingAndStreet(String name, String Street);
+	List<BuildingEntity> findByNameContaining(String name);
 }

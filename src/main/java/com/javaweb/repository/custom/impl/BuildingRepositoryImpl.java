@@ -1,4 +1,4 @@
-package com.javaweb.repository.impl;
+package com.javaweb.repository.custom.impl;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -11,27 +11,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Repository;
 
 import com.javaweb.builder.BuildingSearchBuilder;
 import com.javaweb.repository.BuildingRepository;
+import com.javaweb.repository.custom.buildingRepositoryCustom;
 import com.javaweb.repository.entity.BuildingEntity;
 import com.javaweb.utils.ConnectionJDBCUtil;
 import com.javaweb.utils.NumberUtil;
 import com.javaweb.utils.StringUtil;
 
 @Repository
-@PropertySource("classpath:application-pro.properties")
-public class JDBCBuildingRepositoryImpl implements BuildingRepository {
-	@Value("${spring.datasource.url}")
-	private String url;
-	@Value("${spring.datasource.username}")
-	private String username;
-	@Value("${spring.datasource.password}")
-	private String password;
 
+public class BuildingRepositoryImpl implements buildingRepositoryCustom {
+	@PersistenceContext
+    EntityManager entityManager;
+    
 	public static void joinTable(BuildingSearchBuilder buildingSearchBuilder, StringBuilder sql) {
 		Long staffId = buildingSearchBuilder.getStaffId();
 		if (staffId != null) {
@@ -103,50 +105,23 @@ public class JDBCBuildingRepositoryImpl implements BuildingRepository {
 
 	}
 	
-
-	@Override
 	public List<BuildingEntity> findAll(BuildingSearchBuilder buildingSearchBuilder) {
-		StringBuilder sql = new StringBuilder(
-				"SELECT b.id , b.name, b.districtid, b.street, b.ward, b.numberofbasement, b.floorarea, b.rentprice, b.managername, b.managerphonenumber, b.servicefee, b.brokeragefee FROM building b  ");
-		joinTable(buildingSearchBuilder, sql);
-		StringBuilder where = new StringBuilder(" WHERE 1=1 ");
-		queryNormal(buildingSearchBuilder, where);
-		querySpecial(buildingSearchBuilder, where);
-		where.append(" GROUP BY b.id ");
-		sql.append(where);
-		System.out.println(sql);
-		List<BuildingEntity> result = new ArrayList<>();
-		try (Connection conn = DriverManager.getConnection(url,username,password);
-				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(sql.toString());) {
-			while (rs.next()) {
-				BuildingEntity building = new BuildingEntity();
-				building.setId(rs.getLong("b.id"));
-				building.setName(rs.getString("b.name"));
-				building.setWard(rs.getString("b.ward"));
-				building.setStreet(rs.getString("b.street"));
-				building.setFloorArea(rs.getLong("b.floorarea"));
-				building.setRentPrice(rs.getLong("b.rentprice"));
-				building.setServiceFee(rs.getString("b.servicefee"));
-				building.setBrokerageFee(rs.getLong("b.brokeragefee"));
-				building.setManagerName(rs.getString("b.managername"));
-				building.setManagerPhoneNumber(rs.getString("b.managerPhoneNumber"));
-				result.add(building);
-			}
-
-		} catch (SQLException e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			System.out.println("Connected database failed...");
-
-		}
-		// TODO Auto-generated method stub
-		return result;
+	    StringBuilder sql = new StringBuilder("SELECT b.* FROM building b ");
+	    
+	    joinTable(buildingSearchBuilder, sql);
+	    
+	    StringBuilder where = new StringBuilder(" WHERE 1=1 ");
+	    queryNormal(buildingSearchBuilder, where);
+	    querySpecial(buildingSearchBuilder, where);
+	    
+	    where.append(" GROUP BY b.id ");
+	    
+	    sql.append(where);
+	    
+	    Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
+	    
+	    return query.getResultList();
 	}
 
-	@Override
-	public void DeleteById(Long id) {
-		// TODO Auto-generated method stub
 
-	}
 }
