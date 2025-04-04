@@ -52,6 +52,12 @@ public class BuildingAPI {
 //		List<BuildingEntity> building = buildingRepository.findByNameContaining(name);
 		return result;
 	}
+	@GetMapping(value="/api/building/{name}")
+	public BuildingDTO getBuilding(@PathVariable String name) {
+		BuildingDTO result = new BuildingDTO();
+		List<BuildingEntity> building = buildingRepository.findByNameContaining(name);
+		return result;
+	}
 
 	@DeleteMapping(value="/api/building/{ids}")
 	public void deleteBuilding(@PathVariable Long[] ids) {
