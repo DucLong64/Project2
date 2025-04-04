@@ -62,7 +62,7 @@ public class BuildingRepositoryImpl implements BuildingRepository {
 	public static void querySpecial(BuildingSearchBuilder buildingSearchBuilder, StringBuilder where) {
 		Long staffId = buildingSearchBuilder.getStaffId();
 		if (staffId!= null) {
-			where.append(" AND assignmentbuilding.staffif= " + staffId);
+			where.append(" AND assignmentbuilding.staffid= " + staffId);
 		}
 		Long rentAreaTo = buildingSearchBuilder.getAreaTo();
 		Long rentAreaFrom = buildingSearchBuilder.getAreaFrom();
