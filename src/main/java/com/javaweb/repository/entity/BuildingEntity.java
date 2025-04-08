@@ -40,9 +40,6 @@ public class BuildingEntity {
 	@Column(name = "floorarea")
 	private Long floorArea;
 	
-	@Column(name = "emptyarea")
-	private String emptyArea;
-	
 	@Column(name = "rentprice")
 	private Long rentPrice;
 	
@@ -114,12 +111,7 @@ public class BuildingEntity {
 	public void setFloorArea(Long floorArea) {
 		this.floorArea = floorArea;
 	}
-	public String getEmptyArea() {
-		return emptyArea;
-	}
-	public void setEmptyArea(String emptyArea) {
-		this.emptyArea = emptyArea;
-	}
+	
 	public Long getRentPrice() {
 		return rentPrice;
 	}
